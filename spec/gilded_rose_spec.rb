@@ -3,7 +3,7 @@ require 'gilded_rose'
 describe GildedRose do
 
   describe "#update_quality" do
-    context "When called on a standard item"
+    context "When called on a standard item with before sellin date" do
 
       items = [Item.new("foo", 5, 10)]
       GildedRose.new(items).update_quality
@@ -17,10 +17,84 @@ describe GildedRose do
       end
 
       it "will not reduce the quality to less than 0" do
-        11.times{ GildedRose.new(items).update_quality }
+        20.times{ GildedRose.new(items).update_quality }
       expect(items[0].quality).to eq 0
+      end
+    end
+
+    context "When called on a standard item with Sellin days <= 0 " do
+      items = [Item.new("foo", 0, 10)]
+
+      it "Decreases the quality value by 2" do
+        GildedRose.new(items).update_quality
+        expect(items[0].quality).to eq 8
+      end
+    end
+
+    context "Aged Brie" do
+      items = [Item.new("Aged Brie", 5, 10)]
+
+      it "Increases in quality by 1" do
+        GildedRose.new(items).update_quality
+        expect(items[0].quality).to eq 11
+      end
+
+      it "Cannot have a quality greater than 50" do
+        100.times{ GildedRose.new(items).update_quality }
+        expect(items[0].quality).to eq 50
+      end
+    end
+
+    context "Sulfuras, Hand of Ragnaros" do
+      items = [Item.new("Sulfuras, Hand of Ragnaros", 5, 10)]
+
+      it "Does not change in Sellin date" do
+        expect{GildedRose.new(items).update_quality}.to_not change{items[0].sell_in}.from(5)
+      end
+
+      it "Does not change in value" do
+        expect{GildedRose.new(items).update_quality}.to_not change{items[0].quality}.from(10)
+      end
+    end
+
+    context "Backstage passes to a TAFKAL80ETC concert" do
+      it "Increases by a quality of 1 when Sellin date > 10 days" do
+        items = [Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 20)]
+        expect{GildedRose.new(items).update_quality}.to change{items[0].quality}.from(20).to(21)
+      end
+
+      it "Increases by a quality of 2 when Sellin date between 5-9 days" do
+        items = [Item.new("Backstage passes to a TAFKAL80ETC concert", 11, 20)]
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq 10
+        expect(items[0].quality).to eq 21
+
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq 9
+        expect(items[0].quality).to eq 23
+      end
+
+      it "Increases by a quality of 3 when Sellin date between 5-9 days" do
+        items = [Item.new("Backstage passes to a TAFKAL80ETC concert", 6, 20)]
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq 5
+        expect(items[0].quality).to eq 22
+
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq 4
+        expect(items[0].quality).to eq 25
+      end
+
+      it "Has a quality of 0 when sell_in date is less than 0" do
+        items = [Item.new("Backstage passes to a TAFKAL80ETC concert", 1, 20)]
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq 0
+        expect(items[0].quality).to eq 23
+
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq -1
+        expect(items[0].quality).to eq 0
+      end
     end
   end
-  
-
 end
