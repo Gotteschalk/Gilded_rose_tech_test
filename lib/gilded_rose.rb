@@ -1,4 +1,5 @@
 require_relative 'item'
+require_relative 'item_category'
 
 class GildedRose
 
@@ -26,10 +27,10 @@ STD_QUALITY_APPRECIATION = 1
 private
 
   def enforce_min_and_max_quality(item)
-    unless item.name == "Sulfuras, Hand of Ragnaros"
+    return if item.name == "Sulfuras, Hand of Ragnaros"
       item.quality < MINIMUM_QUALITY_VALUE ? item.quality = MINIMUM_QUALITY_VALUE : item.quality = item.quality
       item.quality > MAXIMUM_QUALITY_VALUE ? item.quality = MAXIMUM_QUALITY_VALUE : item.quality = item.quality
-    end
+
   end
 
   def decrease_quality(item)
@@ -51,6 +52,9 @@ private
   end
 
   def decrease_sell_in_date(item)
-    item.name != "Sulfuras, Hand of Ragnaros" ?  item.sell_in -= 1 : item.sell_in = item.sell_in
+    unless item.name == "Sulfuras, Hand of Ragnaros"
+      item.sell_in -= 1
+    end
   end
+
 end

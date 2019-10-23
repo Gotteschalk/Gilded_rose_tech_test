@@ -18,6 +18,8 @@ class Item
   end
 
   def appreciates?
-    @name == "Aged Brie" || @name == "Backstage passes to a TAFKAL80ETC concert"
+    @name == "Aged Brie" ||
+    @name == "Backstage passes to a TAFKAL80ETC concert"
   end
+
 end
