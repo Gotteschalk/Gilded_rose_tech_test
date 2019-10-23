@@ -10,4 +10,14 @@ class Item
   def to_s()
     "#{@name}, #{@sell_in}, #{@quality}"
   end
+
+  def depreciates?
+    @name == "+5 Dexterity Vest" ||
+    @name == "Elixir of the Mongoose" ||
+    @name == "Conjured Mana Cake"
+  end
+
+  def appreciates?
+    @name == "Aged Brie" || @name == "Backstage passes to a TAFKAL80ETC concert"
+  end
 end

@@ -3,9 +3,9 @@ require 'gilded_rose'
 describe GildedRose do
 
   describe "#update_quality" do
-    context "When called on a standard item with before sellin date" do
+    context "When called on a standard item sellin date > 0" do
 
-      items = [Item.new("foo", 5, 10)]
+      items = [Item.new("Elixir of the Mongoose", 5, 10)]
       GildedRose.new(items).update_quality
 
       it "reduces the quality by 1" do
@@ -23,7 +23,7 @@ describe GildedRose do
     end
 
     context "When called on a standard item with Sellin days <= 0 " do
-      items = [Item.new("foo", 0, 10)]
+      items = [Item.new("Elixir of the Mongoose", 0, 10)]
 
       it "Decreases the quality value by 2" do
         GildedRose.new(items).update_quality
@@ -46,14 +46,14 @@ describe GildedRose do
     end
 
     context "Sulfuras, Hand of Ragnaros" do
-      items = [Item.new("Sulfuras, Hand of Ragnaros", 5, 10)]
+      items = [Item.new("Sulfuras, Hand of Ragnaros", 1, 80)]
 
-      it "Does not change in Sellin date" do
-        expect{GildedRose.new(items).update_quality}.to_not change{items[0].sell_in}.from(5)
+      it "Does change in Sellin date" do
+        expect{GildedRose.new(items).update_quality}.to_not change{items[0].sell_in}.from(1)
       end
 
       it "Does not change in value" do
-        expect{GildedRose.new(items).update_quality}.to_not change{items[0].quality}.from(10)
+        expect{2.times{GildedRose.new(items).update_quality}}.to_not change{items[0].quality}.from(80)
       end
     end
 
@@ -94,6 +94,20 @@ describe GildedRose do
         GildedRose.new(items).update_quality
         expect(items[0].sell_in).to eq -1
         expect(items[0].quality).to eq 0
+      end
+    end
+
+    context "Conjured Mana Cake" do
+      items = [Item.new("Conjured Mana Cake", 1, 20)]
+
+      it "Decreases in quality twice as fast as normal items" do
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq 0
+        expect(items[0].quality).to eq 18
+
+        GildedRose.new(items).update_quality
+        expect(items[0].sell_in).to eq -1
+        expect(items[0].quality).to eq 14
       end
     end
   end
